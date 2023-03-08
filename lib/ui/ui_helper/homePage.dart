@@ -1,6 +1,8 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:marquee/marquee.dart';
 import 'package:nocoin/constants.dart';
+import 'package:nocoin/models/CryptoModel/CryptoData.dart';
 import 'package:nocoin/providers/cryptoDataProvider.dart';
 import 'package:nocoin/ui/ui_helper/themeSwitcher.dart';
 import 'package:provider/provider.dart';
@@ -25,13 +27,14 @@ class _HomePageState extends State<HomePage> {
   var defaultChoiceIndex = 0;
   List<String> chicesList = ["Top MarketCaps", 'Top Gainers', 'Top Losers'];
 
+  late var cryptoProvider;
+
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
-    final cryptoProvider =
-        Provider.of<CryptoDataProvider>(context, listen: false)
-            .getTopMarketCapData();
+    cryptoProvider = Provider.of<CryptoDataProvider>(context, listen: false)
+        .getTopMarketCapData();
   }
 
   @override
@@ -49,7 +52,6 @@ class _HomePageState extends State<HomePage> {
         height: double.infinity,
         width: double.infinity,
         child: SingleChildScrollView(
-          scrollDirection: Axis.vertical,
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
@@ -153,9 +155,9 @@ class _HomePageState extends State<HomePage> {
               Consumer<CryptoDataProvider>(
                 builder: (context, value, child) {
                   switch (value.state.status) {
-                    case Status.COMPLETED:
+                    case Status.LOADING:
                       return SizedBox(
-                        height: 500,
+                        height: 50,
                         child: Shimmer.fromColors(
                             baseColor: Colors.grey.shade400,
                             highlightColor: Colors.white,
@@ -275,8 +277,70 @@ class _HomePageState extends State<HomePage> {
                                   );
                                 })),
                       );
-                    case Status.LOADING:
-                      return Text("done");
+                    case Status.COMPLETED:
+                      List<CryptoData>? cryptoList =
+                          value.dataFuture.data?.cryptoCurrencyList;
+                      return ListView.separated(
+                        physics: const NeverScrollableScrollPhysics(),
+                          scrollDirection: Axis.vertical,
+                          shrinkWrap: true,
+                          itemBuilder: (context, index) {
+                            var tokenId = cryptoList[index].id;
+                            return SizedBox(
+                              height: MediaQuery.of(context).size.height * 0.08,
+                              child: Padding(
+                                padding:
+                                    const EdgeInsets.symmetric(horizontal: 10),
+                                child: Row(
+                                  children: [
+                                    Text((index + 1).toString(),
+                                        style: textTheme.bodySmall),
+                                    Padding(
+                                      padding: const EdgeInsets.symmetric(
+                                          horizontal: 5),
+                                      child: CachedNetworkImage(
+                                        imageUrl:
+                                            "https://s2.coinmarketcap.com/static/img/coins/32x32/$tokenId.png",
+                                        fadeInDuration:
+                                            const Duration(milliseconds: 500),
+                                        height: 32,
+                                        width: 32,
+                                        placeholder: (context, url) =>
+                                            const CircularProgressIndicator(),
+                                        errorWidget: (context, url, error) =>
+                                            const Icon(
+                                                Icons.error_outline_outlined,
+                                                color: Colors.red),
+                                      ),
+                                    ),
+                                    Flexible(
+                                      fit: FlexFit.tight,
+                                      child: Column(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.center,
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.start,
+                                        children: [
+                                          Text(
+                                            cryptoList[index].name!,
+                                            style: textTheme.bodySmall,
+                                          ),
+                                          Text(
+                                            cryptoList[index].symbol!,
+                                            style: textTheme.labelSmall,
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            );
+                          },
+                          separatorBuilder: (context, index) {
+                            return const Divider();
+                          },
+                          itemCount: cryptoList!.length);
                     case Status.ERROR:
                       return Text(value.state.message);
                     default:
