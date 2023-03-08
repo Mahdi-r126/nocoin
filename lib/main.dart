@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
+import 'package:nocoin/providers/cryptoDataProvider.dart';
 import 'package:nocoin/providers/themeProvider.dart';
 import 'package:nocoin/ui/mainWrapper.dart';
 import 'package:nocoin/ui/ui_helper/themeSwitcher.dart';
@@ -12,6 +13,7 @@ void main() {
   SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp]);
   runApp(MultiProvider(providers: [
     ChangeNotifierProvider(create: (context) => ThemeProvider()),
+    ChangeNotifierProvider(create: (context) => CryptoDataProvider()),
   ], child: const MyApp()));
 }
 
