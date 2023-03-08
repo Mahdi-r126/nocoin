@@ -1,7 +1,10 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/flutter_svg.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:marquee/marquee.dart';
 import 'package:nocoin/constants.dart';
+import 'package:nocoin/helpers/numbersHelper.dart';
 import 'package:nocoin/models/CryptoModel/CryptoData.dart';
 import 'package:nocoin/providers/cryptoDataProvider.dart';
 import 'package:nocoin/ui/ui_helper/themeSwitcher.dart';
@@ -281,11 +284,34 @@ class _HomePageState extends State<HomePage> {
                       List<CryptoData>? cryptoList =
                           value.dataFuture.data?.cryptoCurrencyList;
                       return ListView.separated(
-                        physics: const NeverScrollableScrollPhysics(),
+                          physics: const NeverScrollableScrollPhysics(),
                           scrollDirection: Axis.vertical,
                           shrinkWrap: true,
                           itemBuilder: (context, index) {
                             var tokenId = cryptoList[index].id;
+                            MaterialColor filterColor =
+                                NumberHelper.setColorFilter(cryptoList[index]
+                                    .quotes![0]
+                                    .percentChange24h);
+                            final price = NumberHelper.removePriceDecimals(
+                                cryptoList[index].quotes![0].price);
+                            var percentChange =
+                                NumberHelper.removePercentDecimals(
+                                    cryptoList[index]
+                                        .quotes![0]
+                                        .percentChange24h);
+
+                            Color percentColor =
+                                NumberHelper.setPercentChangesColor(
+                                    cryptoList[index]
+                                        .quotes![0]
+                                        .percentChange24h);
+                            Icon percentIcon =
+                                NumberHelper.setPercentChangesIcon(
+                                    cryptoList[index]
+                                        .quotes![0]
+                                        .percentChange24h);
+
                             return SizedBox(
                               height: MediaQuery.of(context).size.height * 0.08,
                               child: Padding(
@@ -330,6 +356,45 @@ class _HomePageState extends State<HomePage> {
                                             style: textTheme.labelSmall,
                                           ),
                                         ],
+                                      ),
+                                    ),
+                                    Flexible(
+                                      fit: FlexFit.tight,
+                                      child: ColorFiltered(
+                                          colorFilter: ColorFilter.mode(
+                                              filterColor, BlendMode.srcATop),
+                                          child: SvgPicture.network(
+                                              "https://s3.coinmarketcap.com/generated/sparklines/web/1d/2781/$tokenId.svg")),
+                                    ),
+                                    Expanded(
+                                      child: Padding(
+                                        padding:
+                                            const EdgeInsets.only(right: 10.0),
+                                        child: Column(
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.center,
+                                          crossAxisAlignment:
+                                              CrossAxisAlignment.end,
+                                          children: [
+                                            Text(
+                                              "\$$price",
+                                              style: textTheme.bodySmall,
+                                            ),
+                                            Row(
+                                              mainAxisAlignment:
+                                                  MainAxisAlignment.end,
+                                              children: [
+                                                percentIcon,
+                                                Text(
+                                                  "$percentChange%",
+                                                  style: GoogleFonts.ubuntu(
+                                                      color: percentColor,
+                                                      fontSize: 12),
+                                                ),
+                                              ],
+                                            ),
+                                          ],
+                                        ),
                                       ),
                                     ),
                                   ],
