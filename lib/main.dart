@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
+import 'package:nocoin/providers/MarketViewProvider.dart';
 import 'package:nocoin/providers/cryptoDataProvider.dart';
 import 'package:nocoin/providers/themeProvider.dart';
 import 'package:nocoin/ui/mainWrapper.dart';
@@ -14,6 +15,7 @@ void main() {
   runApp(MultiProvider(providers: [
     ChangeNotifierProvider(create: (context) => ThemeProvider()),
     ChangeNotifierProvider(create: (context) => CryptoDataProvider()),
+    ChangeNotifierProvider(create: (context) => MarketViewProvider()),
   ], child: const MyApp()));
 }
 

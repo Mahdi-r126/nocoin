@@ -4,69 +4,80 @@ import 'package:nocoin/models/CryptoModel/AllCryptoModel.dart';
 import 'package:nocoin/network/apiProvider.dart';
 import 'package:nocoin/network/responseModel.dart';
 
-class CryptoDataProvider extends ChangeNotifier {
+import '../repositories/CryproDataRepository.dart';
+
+class CryptoDataProvider extends ChangeNotifier{
   ApiProvider apiProvider = ApiProvider();
 
   late AllCryptoModel dataFuture;
   late ResponseModel state;
   var response;
 
-  getTopMarketCapData() async {
-    state = ResponseModel.loading("is loading...");
-    try {
-      Response response = await apiProvider.getTopGainerData();
+  var defaultChoiceIndex = 0;
 
-      if (response.statusCode == 200) {
+  CryptoDataRepository repository = CryptoDataRepository();
+
+
+  CryptoDataProvider(){
+    getTopMarketCapData();
+  }
+
+  getTopMarketCapData() async {
+
+    defaultChoiceIndex = 0;
+    state = ResponseModel.loading("is Loading...");
+    notifyListeners();
+
+    try{
+      response = await apiProvider.getTopMarketCapData();
+
+      if(response.statusCode == 200){
         dataFuture = AllCryptoModel.fromJson(response.data);
         state = ResponseModel.completed(dataFuture);
-      } else {
-        state = ResponseModel.error("something is wrong...");
+      }else{
+        state = ResponseModel.error("something wrong...");
       }
 
       notifyListeners();
-    } catch (e) {
-      print(e);
-      state = ResponseModel.error("Check your internet");
+    }catch(e){
+      state = ResponseModel.error("please check your connection...");
       notifyListeners();
     }
   }
 
   getTopGainersData() async {
-    state = ResponseModel.loading("is loading...");
-    try {
-      Response response = await apiProvider.getTopLosersData();
+    defaultChoiceIndex = 1;
+    state = ResponseModel.loading("is Loading...");
+    notifyListeners();
 
-      if (response.statusCode == 200) {
-        dataFuture = AllCryptoModel.fromJson(response.data);
+    try{
+        dataFuture = await repository.getTopGainerData();
         state = ResponseModel.completed(dataFuture);
-      } else {
-        state = ResponseModel.error("something is wrong...");
-      }
-
-      notifyListeners();
-    } catch (e) {
-      print(e);
-      state = ResponseModel.error("Check your internet");
+        notifyListeners();
+    }catch(e){
+      state = ResponseModel.error("please check your connection...");
       notifyListeners();
     }
   }
 
-  getTopLoosersData() async {
-    state = ResponseModel.loading("is loading...");
-    try {
-      Response response = await apiProvider.getAllCryptoData();
+  getTopLosersData() async {
+    defaultChoiceIndex = 2;
+    state = ResponseModel.loading("is Loading...");
+    notifyListeners();
 
-      if (response.statusCode == 200) {
+    try{
+      response = await apiProvider.getTopLosersData();
+
+      if(response.statusCode == 200){
         dataFuture = AllCryptoModel.fromJson(response.data);
         state = ResponseModel.completed(dataFuture);
-      } else {
-        state = ResponseModel.error("something is wrong...");
+      }else{
+        state = ResponseModel.error("something wrong...");
       }
 
       notifyListeners();
-    } catch (e) {
-      print(e);
-      state = ResponseModel.error("Check your internet");
+    }catch(e){
+      state = ResponseModel.error("please check your connection...");
       notifyListeners();
     }
   }

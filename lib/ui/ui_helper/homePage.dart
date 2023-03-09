@@ -30,20 +30,10 @@ class _HomePageState extends State<HomePage> {
   var defaultChoiceIndex = 0;
   List<String> chicesList = ["Top MarketCaps", 'Top Gainers', 'Top Losers'];
 
-  late var cryptoProvider;
-
-  @override
-  void initState() {
-    // TODO: implement initState
-    super.initState();
-    cryptoProvider = Provider.of<CryptoDataProvider>(context, listen: false)
-        .getTopMarketCapData();
-  }
-
   @override
   Widget build(BuildContext context) {
     var textTheme = Theme.of(context).textTheme;
-
+    final cryptoProvider = Provider.of<CryptoDataProvider>(context);
     return Scaffold(
       appBar: AppBar(
         actions: const [ThemeSwitcher()],
@@ -149,6 +139,17 @@ class _HomePageState extends State<HomePage> {
                             setState(() {
                               defaultChoiceIndex =
                                   value ? index : defaultChoiceIndex;
+                              switch (index) {
+                                case 0:
+                                  cryptoProvider.getTopMarketCapData();
+                                  break;
+                                case 1:
+                                  cryptoProvider.getTopGainersData();
+                                  break;
+                                case 2:
+                                  cryptoProvider.getTopLosersData();
+                                  break;
+                              }
                             });
                           }),
                         );
