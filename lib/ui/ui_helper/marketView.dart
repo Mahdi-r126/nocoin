@@ -51,6 +51,7 @@ class _MarketViewState extends State<MarketView> {
     TextTheme textTheme = Theme.of(context).textTheme;
 
     return Scaffold(
+      resizeToAvoidBottomInset: false,
       appBar: AppBar(
           backgroundColor: primaryColor,
           iconTheme: Theme.of(context).iconTheme,

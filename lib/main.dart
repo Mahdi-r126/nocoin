@@ -5,6 +5,7 @@ import 'package:nocoin/providers/MarketViewProvider.dart';
 import 'package:nocoin/providers/cryptoDataProvider.dart';
 import 'package:nocoin/providers/themeProvider.dart';
 import 'package:nocoin/ui/mainWrapper.dart';
+import 'package:nocoin/ui/signUp.dart';
 import 'package:nocoin/ui/ui_helper/themeSwitcher.dart';
 import 'package:provider/provider.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
@@ -44,7 +45,7 @@ class MyApp extends StatelessWidget {
         home: const Directionality(
           textDirection: TextDirection.ltr,
           child: Scaffold(
-            body: MainWrapper(),
+            body: SignUp(),
           ),
         ),
       );
